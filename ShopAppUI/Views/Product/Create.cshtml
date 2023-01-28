@@ -1,0 +1,43 @@
+﻿@*@model Product*@
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label for="Name">Name </label>
+     @*   <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>*@
+    </div>
+    <div class="form-group">
+        <label for="Name">Price </label>
+    @*    <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>*@
+    </div>
+    <div class="form-group">
+        <label for="Name">Description </label>
+    @*    <textarea asp-for="Description"class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>*@
+    </div>
+    <div class="form-group">
+        <label for="ImageUrl">Image Url </label>
+@*        <input asp-for="ImageUrl" class="form-control" />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>*@
+
+          <div class="form-group">
+        <label for="CategoryId">Category Id </label>
+          
+            @* <select asp-for="CategoryId" asp-items="@ViewBag.Categories" class="form-control">*@
+            <option selected disabled>Seçiniz</option>
+        </select>
+          
+
+    </div>
+
+    </div>
+    <br />
+            <button type="submit" class="btn btn-outline-primary">Submit</button>
+</form>
+
