@@ -10,7 +10,7 @@
         <img src="~/img/@Model.Product.ImageUrl" class="img-fluid">
     </div>
     <div class="col-md-9">                
-            <h1 class="mb-3">@Model.Product.Name</h5> <hr>
+            <h5 class="mb-3">@Model.Product.Name</h5> <hr>
 
             @foreach (var item in Model.Categories)
             {
@@ -27,7 +27,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-12">
-        <p class="p-3">@Model.Product.Description</p>
+    <div class="col-md-12 p-5">
+        <p class="p-3">@Html.Raw(Model.Product.Description)</p>
     </div>
 </div>

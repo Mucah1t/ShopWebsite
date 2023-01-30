@@ -1,5 +1,6 @@
 ﻿using BusinessLayer.Abstract;
 using EntityLayer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ShopAppUI.Models;
@@ -7,6 +8,7 @@ using ShopAppUI.ViewModels;
 
 namespace ShopAppUI.Controllers
 {
+    [Authorize]
     public class AdminController : Controller
     {
         private IProductService _productService;
@@ -123,7 +125,7 @@ namespace ShopAppUI.Controllers
             return View(model);
         }
         [HttpPost]
-        public IActionResult ProductEdit(ProductModel model, int[] categoryIds)
+        public async Task<IActionResult> ProductEdit(ProductModel model, int[] categoryIds,IFormFile file)
         {
 
             //if (ModelState.IsValid)
@@ -136,10 +138,22 @@ namespace ShopAppUI.Controllers
             entity.Name = model.Name;
             entity.Url = model.Url;
             entity.Price = model.Price;
-            entity.ImageUrl = model.ImageUrl;
             entity.Description = model.Description;
             entity.IsHome = model.IsHome;
             entity.IsApproved = model.IsApproved;
+
+            if (file!=null)
+            {
+                var extension=Path.GetExtension(file.FileName);
+                var randomName = string.Format($"{Guid.NewGuid()}{extension}");
+                entity.ImageUrl = randomName;//we assigned the relevant filename to the entity
+                var path=Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\img",randomName); //we need to give a way to save the picture
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                   await file.CopyToAsync(stream);
+                } 
+            }
 
             if (_productService.Update(entity, categoryIds))
             {
