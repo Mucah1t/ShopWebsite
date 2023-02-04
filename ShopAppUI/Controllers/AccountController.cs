@@ -14,9 +14,40 @@ namespace ShopAppUI.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        public IActionResult Login()
+        public IActionResult Login(string ReturnUrl = null)
         {
-            return View();
+            return View(new LoginModel()
+            {
+                ReturnUrl = ReturnUrl
+            });
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken] // for Token trades 
+        public async Task<IActionResult> Login(LoginModel model)
+        {
+            //if (!ModelState.IsValid)
+            //{
+            //    return View(model);
+            //}
+
+            // var user = await _userManager.FindByNameAsync(model.UserName);
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Bu kullanıcı adı ile daha önce hesap oluşturulmamış");
+                return View(model);
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(user, model.Password, true, false);
+
+            if (result.Succeeded)
+            {
+                return Redirect(model.ReturnUrl ?? "~/");
+            }
+
+            ModelState.AddModelError("", "Girilen kullanıcı adı veya parola yanlış");
+            return View(model);
         }
         public IActionResult Register()
         {
@@ -49,6 +80,11 @@ namespace ShopAppUI.Controllers
 
             ModelState.AddModelError("", "Bilinmeyen hata oldu lütfen tekrar deneyiniz.");
             return View(model);
+        }
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return Redirect("~/"); // ~/ anasayfa demek
         }
     }
 }

@@ -46,7 +46,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie = new CookieBuilder
     {
         HttpOnly = true, // Denies access to cookies from javascript-style applications
-        Name = ".ShopApp.Security.Cookie"
+        Name = ".ShopApp.Security.Cookie",
+        SameSite=SameSiteMode.Strict
     };
 });
 
