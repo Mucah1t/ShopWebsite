@@ -2,14 +2,20 @@ using BusinessLayer.Abstract;
 using BusinessLayer.Concrete;
 using DataAccessLayer.Abstract;
 using DataAccessLayer.Concrete.EfCore;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ShopAppUI.EmailServices;
 using ShopAppUI.Identity;
 
-var builder = WebApplication.CreateBuilder(args);
 
+
+var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
+
+ConfigurationManager _configuration = builder.Configuration;
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationContext>(options =>
@@ -32,7 +38,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 
     // options.User.AllowedUserNameCharacters = "";
     options.User.RequireUniqueEmail = true;
-    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedEmail = true;
     options.SignIn.RequireConfirmedPhoneNumber = false;
 });
 
@@ -57,6 +63,13 @@ builder.Services.AddScoped<IProductService, ProductManager>();
 builder.Services.AddScoped<ICategoryRepository, EfCoreCategoryRepository>();
 builder.Services.AddScoped<ICategorryService, CategoryManager>();
 
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>(i =>
+                new SmtpEmailSender(
+                    _configuration["EmailSender:Host"],
+                    _configuration.GetValue<int>("EmailSender:Port"),
+                    _configuration.GetValue<bool>("EmailSender:EnableSSL"),
+                    _configuration["EmailSender:UserName"],
+                    _configuration["EmailSender:Password"]));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
