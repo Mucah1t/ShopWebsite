@@ -53,7 +53,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     {
         HttpOnly = true, // Denies access to cookies from javascript-style applications
         Name = ".ShopApp.Security.Cookie",
-        SameSite=SameSiteMode.Strict
+        SameSite = SameSiteMode.Strict
     };
 });
 
@@ -90,8 +90,25 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.MapControllerRoute(
+    name: "adminroles",
+    pattern: "admin/role/list",
+    defaults: new { controller = "Admin", action = "RoleList" }
+              );
 
 app.MapControllerRoute(
+    name: "adminrolecreate",
+    pattern: "admin/role/create",
+    defaults: new { controller = "Admin", action = "RoleCreate" }
+);
+app.MapControllerRoute(
+    name: "adminroleedit",
+    pattern: "admin/role/{id?}",
+    defaults: new { controller = "Admin", action = "RoleEdit" }
+               );
+
+app.MapControllerRoute(
+
     name: "adminproducts",
     pattern: "admin/products",
     defaults: new { controller = "Admin", action = "ProductList" }

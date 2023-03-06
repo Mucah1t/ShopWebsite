@@ -15,7 +15,7 @@ namespace DataAccessLayer.Concrete.EfCore
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("server=localhost\\SQLEXPRESS;database=DbShopApp;integrated security=true");
+            optionsBuilder.UseSqlServer("server=localhost\\SQLEXPRESS;database=DbShopApp;integrated security=true;MultipleActiveResultSets=true;");
 		}
         protected override void OnModelCreating(ModelBuilder modelBuilder) //many to many relation
         {
