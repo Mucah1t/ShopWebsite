@@ -8,13 +8,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShopAppUI.EmailServices;
 using ShopAppUI.Identity;
-
+using System.Configuration.Provider;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
 // Add services to the container.
 
 ConfigurationManager _configuration = builder.Configuration;
+var provider = builder.Services.BuildServiceProvider();
+var configuration = provider.GetRequiredService<IConfiguration>();
+
 
 builder.Services.AddControllersWithViews();
 
@@ -72,14 +76,18 @@ builder.Services.AddScoped<IEmailSender, SmtpEmailSender>(i =>
                     _configuration["EmailSender:Password"]));
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
+
 if (!app.Environment.IsDevelopment())
 {
     SeedDatabase.Seed();
+    app.UseDeveloperExceptionPage();
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -91,6 +99,19 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+    name: "adminusers",
+    pattern: "admin/user/list",
+    defaults: new { controller = "Admin", action = "UserList" }
+              );
+
+app.MapControllerRoute(
+    name: "adminuseredit",
+    pattern: "admin/user/{id?}",
+    defaults: new { controller = "Admin", action = "UserEdit" }
+               );
+
+
+app.MapControllerRoute(
     name: "adminroles",
     pattern: "admin/role/list",
     defaults: new { controller = "Admin", action = "RoleList" }
@@ -100,7 +121,8 @@ app.MapControllerRoute(
     name: "adminrolecreate",
     pattern: "admin/role/create",
     defaults: new { controller = "Admin", action = "RoleCreate" }
-);
+               );
+
 app.MapControllerRoute(
     name: "adminroleedit",
     pattern: "admin/role/{id?}",
@@ -159,5 +181,13 @@ app.MapControllerRoute(
 app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");
+
+var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+using (var scope = scopeFactory.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+    await SeedIdentity.Seed(userManager, roleManager,configuration);
+}
 
 app.Run();
