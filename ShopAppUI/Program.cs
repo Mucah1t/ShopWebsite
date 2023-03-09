@@ -61,11 +61,17 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
+
 builder.Services.AddScoped<IProductRepository, EfCoreProductRepository>();
 builder.Services.AddScoped<IProductService, ProductManager>();
 
 builder.Services.AddScoped<ICategoryRepository, EfCoreCategoryRepository>();
 builder.Services.AddScoped<ICategorryService, CategoryManager>();
+
+builder.Services.AddScoped<ICartRepository, EfCoreCartRepository>();
+builder.Services.AddScoped<ICartService, CartManager>();
+
+
 
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>(i =>
                 new SmtpEmailSender(
@@ -97,6 +103,12 @@ app.UseAuthentication();  // To activate Identity Library
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "cart",
+    pattern: "cart",
+    defaults: new { controller = "Cart", action = "Index" }
+              );
 
 app.MapControllerRoute(
     name: "adminusers",
