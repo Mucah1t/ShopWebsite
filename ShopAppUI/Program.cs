@@ -71,6 +71,9 @@ builder.Services.AddScoped<ICategorryService, CategoryManager>();
 builder.Services.AddScoped<ICartRepository, EfCoreCartRepository>();
 builder.Services.AddScoped<ICartService, CartManager>();
 
+builder.Services.AddScoped<IOrderRepository, EfCoreOrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderManager>();
+
 
 
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>(i =>
@@ -103,6 +106,12 @@ app.UseAuthentication();  // To activate Identity Library
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "orders",
+    pattern: "orders",
+    defaults: new { controller = "Cart", action = "GetOrders" }
+              );
 
 app.MapControllerRoute(
     name: "checkout",

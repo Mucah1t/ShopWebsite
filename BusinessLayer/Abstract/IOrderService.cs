@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccessLayer.Abstract
+namespace BusinessLayer.Abstract
 {
-    public interface IOrderRepository : IRepository<Order>
+    public interface IOrderService
     {
+        void Create(Order entity);
         List<Order> GetOrders(string userId);
     }
 }
